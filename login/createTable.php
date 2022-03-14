@@ -1,0 +1,60 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="utf-8">
+    <title></title>
+</head>
+<body>
+	<div>
+		<form method="post" action="./createTable.php">
+			<input type="text" name="tablename" class="" placeHolder=""><br>
+			<input type="text" name="explanation" class="" placeHolder=""><br>
+			<input type="submit" name="submit" value="CREATE TABLE" class="">
+		</form>
+	</div>
+  
+</body>
+</html>
+
+<?php
+
+	ini_set( 'display_errors', 1 );
+	ini_set( 'error_reporting', E_ALL );
+	require_once("/var/www/html/tango/func.php");
+
+	$con = connectDB();
+	session_start();
+	$user_id = $_SESSION["user_id"];
+	$username = $_SESSION["username"];
+	echo("user_id: {$user_id}<br>");
+	echo("username: {$username}<br>");
+
+	if ($_POST["submit"]) {
+		$tablename = trim($_POST["tablename"]);
+		//テーブル名が空のとき
+		if (empty($tablename)) {
+			
+		}
+		$explanation = $_POST["explanation"];
+
+		$SQL = "SELECT tablename FROM tables WHERE user_id = '{$user_id}' AND tablename = '{$tablename}'";
+		$res = pg_query($con, $SQL);
+		$num = pg_num_rows($res);
+
+		//テーブル名が使われている場合
+		if ($num > 0) {
+			echo("This table name is already used.");
+		}
+		else {
+			$SQL = "INSERT INTO tables (tablename, explanation, user_id, creation) VALUES ('{$tablename}', '{$explanation}', '{$user_id}', current_timestamp)";
+			$res = pg_query($con, $SQL);
+			if (!$res) {
+				echo("FAILED TO CREATE A TABLE");
+			}
+			else {
+				echo("CREATE A TABLE");
+			}
+		}
+	}
+
+?>
