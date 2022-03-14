@@ -3,8 +3,13 @@
 <head>
     <meta charset="utf-8">
     <title></title>
+
 </head>
 <body>
+    <?php 
+            require_once("./header.php");
+            require_once("./side-bar.php");
+    ?>
 
     <div id="wrapper_table">
 
@@ -32,15 +37,15 @@
 	session_start();
 	$user_id = $_SESSION["user_id"];
 	$username = $_SESSION["username"];
-    $table_id = 1;
+    $table_id = $_GET["table_id"];
 
     if (!$user_id) {
         header("Location: ./logout.php");
     }
 
-	echo("user_id: {$user_id}<br>");
-	echo("username: {$username}<br>");
-    echo("table_id: {$table_id}<br>");
+	//echo("user_id: {$user_id}<br>");
+	//echo("username: {$username}<br>");
+    //echo("table_id: {$table_id}<br>");
 
     $SQL = "SELECT * FROM tables WHERE user_id = '{$user_id}' AND table_id = '{$table_id}'";
     $res = pg_query($con, $SQL);
