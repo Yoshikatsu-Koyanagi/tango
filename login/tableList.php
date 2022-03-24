@@ -35,7 +35,7 @@
     }
 
     $json_tables = json_encode($array_tables);
-    var_dump($array_tables);
+    //var_dump($array_tables);
 
 ?>
 

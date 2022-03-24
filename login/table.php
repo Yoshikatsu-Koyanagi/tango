@@ -2,26 +2,34 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="./login.css">
     <title></title>
-
+    
 </head>
 <body>
     <?php 
             require_once("./header.php");
-            require_once("./side-bar.php");
+            //require_once("./side-bar.php");
     ?>
+    <div class="middle">
+        <?php 
+                require_once("./side-bar.php");
+        ?>
 
-    <div id="wrapper_table">
+        <div class="main">
+            <div id="wrapper_table">
 
-    </div>
-    <br>
+            </div>
+            <br>
 
-    <div id="wrapper_detail">
-        <div class="detail">
-            <form method="post" action="./table.php">
-                <input type="text" name="datum" id="datum" class="" placeHolder=""><br>
-                <input type="submit" name="update_datum" value="UPDATE DATUM" class="">
-            </form>
+            <div id="wrapper_detail">
+                <div class="detail">
+                    <form method="post" action="./table.php">
+                        <input type="text" name="datum" id="datum" class="" placeHolder=""><br>
+                        <input type="submit" name="update_datum" value="UPDATE DATUM" class="">
+                    </form>
+                </div>
+            </div>
         </div>
     </div>
 </body>
