@@ -24,10 +24,13 @@
 
             <div id="wrapper_detail">
                 <div class="detail">
-                    <form method="post" action="./table.php">
-                        <input type="text" name="datum" id="datum" class="" placeHolder=""><br>
-                        <input type="submit" name="update_datum" value="UPDATE DATUM" class="">
+                    <form>
+                        <input type="text" name="data" id="data" class="" placeHolder=""><br>
+                        <input type="hidden" name="data_id" id="data_id" class="" placeHolder=""><br>
                     </form>
+                        
+                    <button name="update_data" id="update_data" class="">UPDATE data</button>
+                    
                 </div>
             </div>
         </div>
@@ -51,10 +54,7 @@
         header("Location: ./logout.php");
     }
 
-	//echo("user_id: {$user_id}<br>");
-	//echo("username: {$username}<br>");
-    //echo("table_id: {$table_id}<br>");
-
+/*
     $SQL = "SELECT * FROM tables WHERE user_id = '{$user_id}' AND table_id = '{$table_id}'";
     $res = pg_query($con, $SQL);
     $num = pg_num_rows($res);
@@ -90,26 +90,107 @@
                 $array_data[] = [$row, $data, $data_id];
             }
             $array_column[] = [$column_id, $columnname, $type, $array_data];
-/*
-            $array_column[] = array(
-                "column_id" => $column_id,
-                "columnname" => $columnname,
-                "type" => $type,
-                "data" => $array_data
-            );
-*/
+
+//            $array_column[] = array(
+//                "column_id" => $column_id,
+//                "columnname" => $columnname,
+//                "type" => $type,
+//                "data" => $array_data
+//            );
+
         }
         //var_dump($array_column);
     }
     $json_column = json_encode($array_column);
-
+*/
 ?>
 
 
 
-<script type="text/javascript">
-    let json_column = <?php echo $json_column?>;
+<script type="text/javascript"> 
+    let user_id = "<?php echo($user_id); ?>";
+	let username = "<?php echo($username); ?>";
+    let table_id = "<?php echo($table_id); ?>";
 
+    function loadTable(user_id, username, table_id) {
+        formData = new FormData();
+        formData.append("user_id", user_id);
+        formData.append("username", username);
+        formData.append("table_id", table_id);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/loadTable.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let json_column = xhr.response;
+                displayTable(json_column);
+                //console.log(json_column);
+            }
+        }
+        //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send(formData);
+    }
+
+    loadTable(user_id, username, table_id);
+
+    function displayTable(json_column) {
+        //console.log("json: " + json_column);
+        json_column = JSON.parse(json_column)
+        //console.log("json2: " + json_column);
+
+        wrapper = document.getElementById("wrapper_table");
+        wrapper.innerHTML = "";
+
+        json_column.forEach( function (value, index) {
+            column_id = value[0];
+            columnname = value[1];
+            type = value[2];
+            array_data = value[3];
+
+            column_no = "column_" + index;
+            column = "<div id='" + column_no + "' class='column'></div>";
+            wrapper.insertAdjacentHTML('beforeend', column);
+
+            column = document.getElementById(column_no);
+            cell_name = "<div class='cell_name'>" + columnname + "</div>";
+            column.insertAdjacentHTML('beforeend', cell_name);
+
+            for (i = 0; i < 3; i++) {
+                value2 = array_data[i];
+                if (!value2) {
+                    data = "";
+                    data_id = "";
+                }
+                else {
+                    row = value2[0];
+                    data = value2[1];
+                    data_id = value2[2];      
+                }
+                column = document.getElementById(column_no);
+                cell_data = "<div class='cell_data' onclick='clickData(\"" + data + "\", \"" + data_id + "\")'>" + data + "</div>";
+                column.insertAdjacentHTML('beforeend', cell_data);
+            };
+/*
+            array_data.forEach( function (value2) {
+                row = value2[0];
+                data = value2[1];
+                data_id = value2[2];
+                column = document.getElementById(column_no);
+                cell_data = "<div class='cell_data' onclick='clickData(\"" + data + "\", \"" + data_id + "\")'>" + data + "</div>";
+                column.insertAdjacentHTML('beforeend', cell_data);
+            });
+*/
+        });
+    }
+/*
+    let json_column = <?php //echo($json_column); ?>;
+    console.log("json: " + json_column);
     json_column.forEach( function (value, index) {
         column_id = value[0];
         columnname = value[1];
@@ -134,15 +215,43 @@
             column.insertAdjacentHTML('beforeend', cell_data);
         });
     });
-
+*/
     function clickData(data, data_id) {
         console.log(data);
-        let form = document.getElementById("datum");
-        form.value = data;
+        let form_data = document.getElementById("data");
+        form_data.value = data;
+        let form_data_id = document.getElementById("data_id");
+        form_data_id.value = data_id;
 
         let detail = document.getElementById("wrapper_detail");
         detail.style.display = "block";
     };
+
+
+    let update_data = document.getElementById('update_data');
+    update_data.addEventListener('click', function() {
+        let form = document.querySelector('form');
+        //new FormData(form);
+        //console.log(form);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/updateData.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                loadTable(user_id, username, table_id);
+                console.log(responce);
+            }
+        }
+        //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send(new FormData(form));
+    });
 </script>
 
 <style>
