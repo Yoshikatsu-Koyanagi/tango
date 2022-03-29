@@ -10,8 +10,8 @@
     $table_id = $_POST["table_id"];
     
     $SQL = "SELECT * FROM tables WHERE user_id = '{$user_id}' AND table_id = '{$table_id}'";
-    $res = pg_query($con, $SQL);
-    $num = pg_num_rows($res);
+    $res0 = pg_query($con, $SQL);
+    $num = pg_num_rows($res0);
     if ($num == 0) {
         echo("The table is not found");
     }
@@ -53,8 +53,11 @@
             );
 */
         }
+        
+        $rows = pg_fetch_assoc($res0)["rows"];    //tableテーブルのrow値
     }
-    $json_column = json_encode($array_column);
-    echo($json_column);
+    $array_column = [$array_column, $rows]; //
+    $json = json_encode($array_column);
+    echo($json);
     exit;
 ?>

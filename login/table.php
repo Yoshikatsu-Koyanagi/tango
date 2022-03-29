@@ -128,9 +128,13 @@
                 //console.log("LOADING");
             }
             else if (xhr.readyState == 4 && xhr.status == 200) {
-                let json_column = xhr.response;
-                displayTable(json_column);
-                //console.log(json_column);
+                let json = xhr.response;
+                json = JSON.parse(json);
+                array_column = json[0];
+                rows = parseInt(json[1]);
+                console.log(array_column);
+                console.log(rows);
+                displayTable(array_column, rows);
             }
         }
         //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -139,15 +143,15 @@
 
     loadTable(user_id, username, table_id);
 
-    function displayTable(json_column) {
+    function displayTable(array_column, rows) {
         //console.log("json: " + json_column);
-        json_column = JSON.parse(json_column)
+        //json_column = JSON.parse(json_column);
         //console.log("json2: " + json_column);
 
         wrapper = document.getElementById("wrapper_table");
         wrapper.innerHTML = "";
 
-        json_column.forEach( function (value, index) {
+        array_column.forEach( function (value, index) {
             column_id = value[0];
             columnname = value[1];
             type = value[2];
@@ -161,7 +165,7 @@
             cell_name = "<div class='cell_name'>" + columnname + "</div>";
             column.insertAdjacentHTML('beforeend', cell_name);
 
-            for (i = 0; i < 3; i++) {
+            for (i = 0; i < rows; i++) {
                 value2 = array_data[i];
                 if (!value2) {
                     data = "";
@@ -189,7 +193,7 @@
         });
     }
 /*
-    let json_column = <?php //echo($json_column); ?>;
+    let array_column = <?php //echo($array_column); ?>;
     console.log("json: " + json_column);
     json_column.forEach( function (value, index) {
         column_id = value[0];
