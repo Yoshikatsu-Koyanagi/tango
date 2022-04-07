@@ -2,17 +2,28 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
+	<link rel="stylesheet" href="./login.css">
     <title></title>
 </head>
 <body>
-	<div>
-		<form method="post" action="./createTable.php">
-			<input type="text" name="tablename" class="" placeHolder=""><br>
-			<input type="text" name="explanation" class="" placeHolder=""><br>
-			<input type="submit" name="submit" value="CREATE TABLE" class="">
-		</form>
+	<?php 
+            require_once("./header.php");
+            //require_once("./side-bar.php");
+    ?>
+	<div class="middle">
+        <?php 
+                require_once("./side-bar.php");
+        ?>
+		<div class="main">
+			<div>
+				<form method="post" action="./createTable.php">
+					<input type="text" name="tablename" class="" placeHolder=""><br>
+					<input type="text" name="explanation" class="" placeHolder=""><br>
+					<input type="submit" name="submit" value="CREATE TABLE" class="">
+				</form>
+			</div>
+		</div>
 	</div>
-  
 </body>
 </html>
 
@@ -33,7 +44,8 @@
 		$tablename = trim($_POST["tablename"]);
 		//テーブル名が空のとき
 		if (empty($tablename)) {
-			
+			echo("The tablename can't be empty.");
+			exit;
 		}
 		$explanation = $_POST["explanation"];
 
@@ -44,6 +56,7 @@
 		//テーブル名が使われている場合
 		if ($num > 0) {
 			echo("This table name is already used.");
+			exit;
 		}
 		else {
 			$SQL = "INSERT INTO tables (tablename, explanation, user_id, creation) VALUES ('{$tablename}', '{$explanation}', '{$user_id}', current_timestamp)";
