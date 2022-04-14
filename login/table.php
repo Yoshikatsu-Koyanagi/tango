@@ -27,7 +27,7 @@
                             <i class="fa-solid fa-unlock" id="icon_public"></i>
                         </div>
                         <button type="button" onclick="displayAddColumnWindow();"><i class="fa-solid fa-square-plus"></i></button>
-                        <i class="fa-solid fa-gear"></i>
+                        <button type="button" onclick="settingTable();"><i class="fa-solid fa-gear"></i></button>
                     </div>
                 </div>
                 <div id="explanation">
@@ -49,30 +49,42 @@
                 <div id="detail_window">
                     <button onclick="closeWindow();" ><i class="fa-solid fa-circle-xmark"></i></button>
                     <form id="form_detail">
-                        <input type="text" name="data" id="data" class="" placeHolder=""><br>
-                        <input type="hidden" name="data_id" id="data_id" class="" placeHolder=""><br>
-                        <input type="hidden" name="column_id" id="column_id" class="" placeHolder=""><br>
-                        <input type="hidden" name="row" id="row" class="" placeHolder=""><br>
+                        <!--<textarea id="data" class=""></textarea>-->
+                        <input type="search" id="detail_data" name="data">
+                        <input type="hidden" id="detail_data_id" name="data_id"><br>
+                        <input type="hidden" id="detail_column_id" name="column_id"><br>
+                        <input type="hidden" id="detail_row" name="row"><br>
                     </form>
                         
-                    <button name="update_data" id="update_data" class="">UPDATE data</button>
+                    <button id="update_data">UPDATE data</button>
                     
                 </div>
                 <div id="add_column_window">
                     <button onclick="closeWindow();" ><i class="fa-solid fa-circle-xmark"></i></button>
                     <form id="form_add_column">
                         Name
-                        <input type="text" name="columnname" class="" placeHolder=""><br>
+                        <input type="" id="columnname" name="columnname"><br>
                         Type
                         <select name="type" size="">
                             <option value="1">string</option>
                             <option value="2">float</option>
-                            <option value="3">iteger</option>
-                            <option value="1">date</option>
+                            <option value="3">integer</option>
+                            <option value="4">date</option>
                         </select>
                     </form>
                         
-                    <button name="add_column" id="add_column" class="">ADD column</button>
+                    <button id="add_column">ADD column</button>
+                    
+                </div>
+                <div id="add_data_window">
+                    <button onclick="closeWindow();"><i class="fa-solid fa-circle-xmark"></i></button>
+                    <div id="add_data_columnname"></div>
+                    <form id="form_add_data">
+                        <input type="text" id="add_data_data" name="data"><br>
+                        <input type="hidden" id="add_data_column_id" name="column_id"><br>
+                    </form>
+                        
+                    <button id="add_data">ADD data</button>
                     
                 </div>
             </div>
@@ -119,7 +131,7 @@
             else if (xhr.readyState == 4 && xhr.status == 200) {
                 let json = xhr.response;
                 array_tableInfo = JSON.parse(json);
-                console.log(array_tableInfo);
+                //console.log(array_tableInfo);
                 displayTableInfo(array_tableInfo);
             }
         }
@@ -141,7 +153,7 @@
         public = array_tableInfo["public"];
         if (public == 1) {
             e_public = document.getElementById("icon_public");
-            e_public.style.display = "block;";
+            e_public.style.display = "block";
         }
         else {
             e_private = document.getElementById("icon_private");
@@ -174,8 +186,11 @@
             }
             else if (xhr.readyState == 4 && xhr.status == 200) {
                 let json = xhr.response;
+                console.log(json);
                 json = JSON.parse(json);
+                console.log(json);
                 array_column = json[0];
+                console.log(array_column);
                 //rows = parseInt(json[1]);
                 array_row = json[1];
                 //console.log(array_column);
@@ -192,6 +207,7 @@
         //console.log("json: " + json_column);
         //json_column = JSON.parse(json_column);
         //console.log("json2: " + json_column);
+        //console.log(array_column);
 
         wrapper = document.getElementById("wrapper_table");
         wrapper.innerHTML = "";
@@ -207,7 +223,7 @@
             wrapper.insertAdjacentHTML('beforeend', column);
 
             column = document.getElementById(column_no);
-            cell_name = "<div class='cell_name'>" + columnname + "</div>";
+            cell_name = "<div class='cell_name'><button onclick='displayAddDataWindow(\"" + columnname + "\", \"" + column_id + "\")'>" + columnname + "</button></div>";
             column.insertAdjacentHTML('beforeend', cell_name);
 
             for (i = 1; i < array_row.length + 1; i++) {
@@ -222,23 +238,27 @@
                     data = value2["data"];
                     data_id = value2["data_id"];          
                 }
-                column = document.getElementById(column_no);
+                //column = document.getElementById(column_no);
                 id = "data_id_" + index + "_" + i;
-                cell_data = "<div class='cell_data' id='" + id + "' onclick='changeBgColor(\"" + id + "\"); diplayDetailWindow(\"" + data + "\", \"" + data_id + "\", \"" + column_id + "\", \"" + row + "\")'>" + data + "</div>";
+                cell_data = "<div class='cell_data' id='" + id + "' onclick='changeBgColor(\"" + id + "\"); displayDetailWindow(\"" + data + "\", \"" + data_id + "\", \"" + column_id + "\", \"" + row + "\")'>" + data + "</div>";
                 column.insertAdjacentHTML('beforeend', cell_data);
             };
+
+            //cell_add = "<div class='cell_add'>+</div>";
+            //column.insertAdjacentHTML('beforeend', cell_add);
+
         });
     }
 
-    function diplayDetailWindow(data, data_id, column_id, row) {
-        let form_data = document.getElementById("data");
-        form_data.value = data;
-        let form_data_id = document.getElementById("data_id");
-        form_data_id.value = data_id;
-        let form_column_id = document.getElementById("column_id");
-        form_column_id.value = column_id;
-        let form_row = document.getElementById("row");
-        form_row.value = row;
+    function displayDetailWindow(data, data_id, column_id, row) {
+        let detail_data = document.getElementById("detail_data");
+        detail_data.value = data;
+        let form_data_id = document.getElementById("detail_data_id");
+        detail_data_id.value = data_id;
+        let detail_column_id = document.getElementById("detail_column_id");
+        detail_column_id.value = column_id;
+        let detail_row = document.getElementById("detail_row");
+        detail_row.value = row;
         console.log("data: " + data);
         console.log("data_id: " + data_id);
         console.log("column_id: " + column_id);
@@ -255,6 +275,7 @@
     };
 
     function displayAddColumnWindow(data, data_id, column_id, row) {
+        clearBgColor();
         let wrapper_window = document.getElementById("wrapper_window");
         wrapper_window.style.display = "flex";
         windows = wrapper_window.children;
@@ -265,21 +286,41 @@
         add_column_window.style.display = "block";
     };
 
+    function displayAddDataWindow(columnname, column_id) {
+        clearBgColor();
+        let add_column_id = document.getElementById("add_data_column_id");
+        add_column_id.value = column_id;
+
+        let wrapper_window = document.getElementById("wrapper_window");
+        wrapper_window.style.display = "flex";
+        windows = wrapper_window.children;
+        for (let i = 0; i < windows.length; i++){
+			windows[i].style.display = "none";
+		}
+        let add_column_window = document.getElementById("add_data_window");
+        add_column_window.style.display = "block";
+
+        let add_data_columnname = document.getElementById("add_data_columnname");
+        add_data_columnname.innerHTML = columnname;
+    };
+
     function closeWindow() {
         let wrapper_window = document.getElementById("wrapper_window");
         wrapper_window.style.display = "none";
-
-        let cell_data = document.getElementsByClassName("cell_data");
-        console.log(cell_data);
-        for (let i = 0; i < cell_data.length; i++){
-			cell_data[i].style.backgroundColor = "";
-		}
+        clearBgColor();
     }
 
     function changeBgColor(id) {
+        clearBgColor();
         let element = document.getElementById(id);
-        console.log(element);
         element.style.backgroundColor = "yellow";
+    }
+
+    function clearBgColor() {
+        let cell_data = document.getElementsByClassName("cell_data");
+        for (let i = 0; i < cell_data.length; i++){
+			cell_data[i].style.backgroundColor = "";
+		}
     }
 
     let update_data = document.getElementById('update_data');
@@ -289,7 +330,7 @@
         formData.append("user_id", user_id);
         //formData.append("username", username);
         formData.append("table_id", table_id);
-        //console.log(form);
+        console.log("form");
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', './ajax/updateData.php');
@@ -311,13 +352,45 @@
         xhr.send(formData);
     });
 
+    let add_data = document.getElementById('add_data');
+    add_data.addEventListener('click', function() {
+        let form = document.getElementById('form_add_data');
+        formData = new FormData(form);
+        formData.append("user_id", user_id);
+        formData.append("table_id", table_id);
+        console.log(formData);  
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/addData.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                if (responce == 0) {
+                    loadTable(user_id, username, table_id);
+                    closeWindow();
+                }
+                else {
+                    window.alert(responce);
+                }
+                console.log(responce);
+            }
+        }
+        //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send(formData);
+    });
+
     let add_column = document.getElementById('add_column');
     add_column.addEventListener('click', function() {
         let form = document.getElementById('form_add_column');
         formData = new FormData(form);
         formData.append("user_id", user_id);
         formData.append("table_id", table_id);
-        console.log(form);
 
         let xhr = new XMLHttpRequest();
         xhr.open('POST', './ajax/addColumn.php');
@@ -343,6 +416,10 @@
         //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
         xhr.send(formData);
     });
+
+    function settingTable() {
+        window.location.href = "./settingTable.php?table_id=" + table_id;
+    }
 </script>
 
 <style>
@@ -385,18 +462,25 @@
 		height: 40px;
         line-height:40px;
 		vertical-align: middle;
-		font-family: Roboto;
-		font-size: 20px;
-        font-weight: bold;
-        padding: 0 10px;
 		border: solid 4px #C3C3C3;
         border-left: none;
 		background-color: #C3C3C3;
-		color: white;
 	}
+    .cell_name:hover {
+		background-color: #B7B7B7;
+	}
+    .cell_name button {
+        width: 100%;
+        height: 100%;
+        padding: 0 10px;
+		font-family: Roboto;
+		font-size: 20px;
+        font-weight: bold;
+        color: white;
+    }
     .cell_data {
 		height: 40px;
-        line-height:40px;
+        line-height: 40px;
 		font-family: Roboto;
 		font-size: 20px;
         padding: 0 10px;
@@ -405,6 +489,17 @@
         border-left: none;
 		background-color: white;
 	}
+    .cell_add {
+		height: 15px;
+        line-height:15px;
+		font-family: Roboto;
+		font-size: 20px;
+        padding: 0 10px;
+        color: white;
+		border: solid 4px #C3C3C3;
+		border: none;
+		background-color: #b0b0b0;
+	}
     #column_0 .cell_name {
         border-top: solid 4px #C3C3C3;
         border-left: solid 4px #C3C3C3;
@@ -412,7 +507,8 @@
     #column_0 .cell_data {
         border-left: solid 4px #C3C3C3;
     }
-
+    #column_0 .cell_add {
+    }
     #wrapper_window {
         display: none;
         position: absolute;
@@ -440,7 +536,7 @@
     #form_detail * {
         font-size: 18px;
     }
-    #add_column_window {
+    #add_column_window, #add_data_window {
         display: none;
         text-align: center;
         background-color: #eeeeee;
@@ -459,7 +555,8 @@
         margin: 10px;
         padding: 8px;
         font-size: 15px;
-        background-color: #bfbfbf;
+        color: white;
+        background-color: #8d8d8d;
         border-radius: 10px;
     }
     .fa-square-plus {

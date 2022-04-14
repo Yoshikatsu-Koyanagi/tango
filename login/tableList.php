@@ -2,12 +2,24 @@
 <html lang="ja">
 <head>
     <meta charset="utf-8">
+    <link rel="stylesheet" href="./login.css">
+    <script src="https://kit.fontawesome.com/dac4001bc8.js" crossorigin="anonymous"></script>
     <title></title>
 </head>
 <body>
-	<div id="wrapper_list">
-	</div>
-  
+    <?php 
+                require_once("./header.php");
+                //require_once("./side-bar.php");
+    ?>
+    <div class="middle">
+        <?php 
+                require_once("./side-bar.php");
+        ?>
+        <div class="main">
+            <div id="wrapper_list">
+            </div>
+        </div>
+    </div>
 </body>
 </html>
 
