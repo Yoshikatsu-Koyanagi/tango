@@ -34,7 +34,7 @@
                 require_once("./side-bar.php");
         ?>
         <div class="main">
-            <div class="">
+            <div id="table_info">
                 <form id="form_table">
                     <div>
                         <input type="text" id="tablename" name="tablename">
@@ -49,11 +49,23 @@
                 </form>
                 <button id="update_table">UPDATE</button>
             </div>
-            <div>
-                <form id="form_column">
-                </form>
+            <div id="column_info">
+                <div id="columns">
+                </div>
                 <button id="button_sort">sort</button>
                     
+            </div>
+
+            <div id="wrapper_window">
+                <div id="update_column_window">
+                    <button onclick="closeWindow();"><i class="fa-solid fa-circle-xmark"></i></button>
+                    <form id="form_update_column">
+                        <input type="text" id="update_column_columnname" name="columnname"><br>
+                        <input type="hidden" id="update_column_column_id" name="column_id"><br>
+                    </form>
+                        
+                    <button id="update_column">UPDATE column</button>
+                </div>
             </div>
         </div>
     </div>
@@ -149,9 +161,12 @@
             }
             else if (xhr.readyState == 4 && xhr.status == 200) {
                 let json = xhr.response;
-                array_columns = JSON.parse(json);
                 console.log(json);
-                setColumns(array_columns);
+                json = JSON.parse(json);
+                array_columns = json[0];
+                column_order = json[1].split(',');
+                console.log(column_order);
+                setColumns(array_columns, column_order);
             }
         }
         xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
@@ -160,7 +175,7 @@
 
     getColumns(table_id);
 
-    function setColumns(array_columns) {
+    function setColumns(array_columns, column_order) {
 /*
         Object.keys(array_columns).forEach( function(key) {
             //columnname = value["columnname"];
@@ -168,38 +183,147 @@
             console.log(key + ":" + array_columns[key]["columnname"]);
         });
 */
-        for (let i = 11; i < 13; i++) {
-            columnname = array_columns[i]["columnname"];
-            type = array_columns[i]["type"];
 
-            form_column = document.getElementById("form_column");
-            column = "<div id='" + i + "'><input type='text' value='" + columnname + "'></input><input type='text' value='" + type + "'></input></div>";
-            form_column.insertAdjacentHTML('beforeend', column);
-            
-        }
+        column_order.forEach( function (value) {
+            //array_columns[value]["columnname"]
+            columnname = array_columns[value]["columnname"];
+            type = array_columns[value]["type"];
+
+            columns = document.getElementById("columns");
+            column = "<div id='" + value + "'><button type='button' onclick='closeWindow(); displayUpdateColumnWindow(\"" + value + "\", \"" + columnname +  "\");'>" + columnname + "</button></div>";
+            columns.insertAdjacentHTML('beforeend', column);
+        });
+
 
     }
+    
+    function displayUpdateColumnWindow(column_id, columnname) {
+        let wrapper_window = document.getElementById("wrapper_window");
+        wrapper_window.style.display = "flex";
+        windows = wrapper_window.children;
+        for (let i = 0; i < windows.length; i++){
+			windows[i].style.display = "none";
+		}
+        let update_column_window = document.getElementById("update_column_window");
+        update_column_window.style.display = "block";
+
+        let update_column_columnname = document.getElementById("update_column_columnname");
+        update_column_columnname.value = columnname;
+
+        let update_column_column_id = document.getElementById("update_column_column_id");
+        update_column_column_id.value = column_id;
+    }
+
+    function closeWindow() {
+        let wrapper_window = document.getElementById("wrapper_window");
+        wrapper_window.style.display = "none";
+        //clearBgColor();
+    }
+
+    function clearColumns() {
+        let columns = document.getElementById("columns");
+        columns.innerHTML = "";
+        //clearBgColor();
+    }
+
+    function updateColumnOrder(table_id, column_order) {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/updateColumnOrder.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                console.log(responce);
+                if (responce != 0) {
+                    echo(responce);
+                }
+                else {
+                    clearColumns();
+                    getColumns(table_id);
+                }
+ 
+            }
+        }
+        xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send("table_id=" + table_id + "&column_order=" + column_order);
+    }
+
+    let button_sort = document.getElementById('button_sort');
+    button_sort.addEventListener('click', function() {
+        //let columns = document.getElementById('columns');
+        //var num = columns.childElementCount;
+        let children = document.querySelectorAll('#columns div');
+
+        let column_order = "";
+        for(let i = 0; i < children.length; i++) {
+	        column_id = children[i].id.toString();
+            column_order = column_order + column_id;
+            if (i != children.length - 1) {
+                column_order = column_order + ",";
+            }
+        }
+        updateColumnOrder(table_id, column_order);
+    });
 </script>
 
 <script type="text/javascript">
-    new Sortable(form_column,{
+    new Sortable(columns,{
     animation: 150,
     ghostClass: 'ghost',
     chosenClass: 'light-green',
     delay: 100,
     });
-
-    let button_sort = document.getElementById('button_sort');
-    button_sort.addEventListener('click', function() {
-        //let form_column = document.getElementById('form_column');
-        //var num = form_column.childElementCount;
-        let children = document.querySelectorAll('#form_column div');
-
-        for(let i = 0; i < children.length; i++) {
-	        console.log(children[i].id);
-        }
-
-    });
-
-
 </script>
+
+<style>
+    #wrapper_window {
+        display: none;
+        position: absolute;
+        width: 300px;
+        height: 200px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        z-index: 10;
+    }
+    #update_column_window {
+        display: none;
+        text-align: center;
+        background-color: #eeeeee;
+        border: solid 5px;
+        border-color: white;
+        border-radius: 15px;
+        padding: 10px;
+        margin: auto;
+        box-shadow: 5px 5px 5px;
+    }
+    .fa-circle-xmark {
+        margin: 0 8px;
+        color: grey; 
+        font-size: 20px;
+    }
+    .fa-circle-xmark:hover {
+        color: black;
+    }
+    button {
+        border: none; 
+        padding: 0; 
+        margin: 0; 
+        background-color: rgba(0,0,0,0);
+    }
+    #column_info div button {
+        display: block;
+        padding: 5px 10px; 
+        margin: 2px; 
+        font-size: 18px;
+        color: white;
+        background-color: rgba(200,200,200,1);
+    }
+</style>

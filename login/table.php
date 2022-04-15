@@ -85,7 +85,6 @@
                     </form>
                         
                     <button id="add_data">ADD data</button>
-                    
                 </div>
             </div>
         </div>
@@ -440,6 +439,7 @@
     }
     #explanation {
         margin: 1px 10px;
+        white-space: pre-wrap;
     }
     .wrapper_dates {
         display: flex;
@@ -546,7 +546,6 @@
         padding: 10px;
         margin: auto;
         box-shadow: 5px 5px 5px;
-
     }
     #form_add_column * {
         font-size: 18px;

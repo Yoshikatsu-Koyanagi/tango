@@ -21,7 +21,7 @@
         "public" => $row["public"],
         "creation" => date("F d, Y H:i", strtotime($row["creation"])),
         "update" => date("F d, Y H:i", strtotime($row["update"])),
-        //"rows" => $row["rows"],
+        //"column_order" => $row["column_order"],
     );
 
     $json = json_encode($array);

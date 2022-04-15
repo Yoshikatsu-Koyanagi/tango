@@ -25,7 +25,25 @@
             $column_id => array("columnname" => $columnname, "type" => $type)
         );
     }
-    $json = json_encode($array_column);
+
+    //column_order取得
+    $SQL = "SELECT column_order FROM tables ";
+    $SQL .= "WHERE table_id = '{$table_id}'";
+    $res = pg_query($con, $SQL);
+
+    $res = pg_query($con, $SQL);
+    if (!$res) {
+        //SELECT失敗
+        echo("error: ".$SQL);
+        exit;
+    }
+
+    $row = pg_fetch_assoc($res);
+    $column_order = $row["column_order"];
+
+    $array = [$array_column, $column_order];
+
+    $json = json_encode($array);
     echo($json);
     exit;
 ?>

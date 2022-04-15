@@ -16,11 +16,29 @@
         echo("The table is not found");
         exit;
     }
-    $array_column = array();
-    $SQL = "SELECT * FROM columns WHERE user_id = '{$user_id}' AND table_id = '{$table_id}' ORDER BY column_id ASC";
+    $row0 = pg_fetch_assoc($res0);
+    $column_row = $row0["column_order"];
+    $array_column_row = explode(",", $row0["column_order"]);
+    
+    //$SQL = "SELECT * FROM columns WHERE user_id = '{$user_id}' AND table_id = '{$table_id}' ORDER BY column_id ASC";
+    $SQL = "SELECT * FROM columns ";
+    $SQL .= "WHERE user_id = '{$user_id}' AND table_id = '{$table_id}' AND column_id IN ({$column_row}) ";
+    $SQL .= "ORDER BY ";
+    $SQL .= "CASE column_id ";
+    foreach ($array_column_row as $key => $val) {
+        $SQL .= "WHEN '{$val}' THEN {$key} ";
+    }
+    $SQL .= "END";
+
     $res = pg_query($con, $SQL);
+    if (!$res) {
+        //SELECT失敗
+        echo("error: ".$SQL);
+        exit;
+    }
     $num = pg_num_rows($res);
 
+    $array_column = array();
     //for ($i = 0; $i < $num; $i++) {
     while ($row = pg_fetch_array($res)) {
         //$row = pg_fetch_array($res, 0);
