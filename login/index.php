@@ -22,8 +22,7 @@
         ?>
         <div class="main">
             <div>
-                <a href="./createTable.php">Create Table</a><br>
-                <a href="./tableList.php">Tables</a><br>
+
             </div>
         </div>
     </div>

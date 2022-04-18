@@ -50,3 +50,16 @@ body {
     padding: 10px;
     margin: 45px 0 0 50px;
 }
+.fa-table {
+    color: white;
+    margin: 0 4px;
+    font-size: 25px;
+    line-height: 45px;
+}
+.fa-right-from-bracket {
+    color: white;
+    margin: 0 4px;
+    font-size: 25px;
+    line-height: 45px;
+}
+

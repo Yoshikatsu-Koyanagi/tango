@@ -269,6 +269,36 @@
         }
         updateColumnOrder(table_id, column_order);
     });
+
+    let update_column = document.getElementById('update_column');
+    update_column.addEventListener('click', function() {
+        let form = document.getElementById('form_update_column');
+        formData = new FormData(form);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/updateColumn.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                if (responce == 0) {
+                    loadTable(user_id, username, table_id);
+                    closeWindow();
+                }
+                else {
+                    window.alert(responce);
+                }
+                console.log(responce);
+            }
+        }
+        //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send(formData);
+    });
 </script>
 
 <script type="text/javascript">

@@ -8,10 +8,27 @@
     
 </head>
 <body>
+    <?php
+
+        ini_set( 'display_errors', 1 );
+        ini_set( 'error_reporting', E_ALL );
+        require_once("/var/www/html/tango/func.php");
+
+        $con = connectDB();
+        session_start();
+        $user_id = $_SESSION["user_id"];
+        $username = $_SESSION["username"];
+        $table_id = $_GET["table_id"];
+
+        if (!$user_id) {
+            header("Location: ./logout.php");
+        }
+    ?>
     <?php 
             require_once("./header.php");
             //require_once("./side-bar.php");
     ?>
+
     <div class="middle">
         <?php 
                 require_once("./side-bar.php");
@@ -30,14 +47,17 @@
                         <button type="button" onclick="settingTable();"><i class="fa-solid fa-gear"></i></button>
                     </div>
                 </div>
-                <div id="explanation">
-                </div>
-                <div class="wrapper_dates">
-                    <div id="creation">
+                <details>
+                    <summary>explanation</summary>
+                    <div id="explanation">
                     </div>
-                    <div id="update">
+                    <div class="wrapper_dates">
+                        <div id="creation">
+                        </div>
+                        <div id="update">
+                        </div>
                     </div>
-                </div>
+                </details>
             </div>
 
             <div id="wrapper_table">
@@ -63,9 +83,9 @@
                     <button onclick="closeWindow();" ><i class="fa-solid fa-circle-xmark"></i></button>
                     <form id="form_add_column">
                         Name
-                        <input type="" id="columnname" name="columnname"><br>
+                        <input type="text" id="columnname" name="columnname"><br>
                         Type
-                        <select name="type" size="">
+                        <select name="type">
                             <option value="1">string</option>
                             <option value="2">float</option>
                             <option value="3">integer</option>
@@ -92,22 +112,7 @@
 </body>
 </html>
 
-<?php
 
-	ini_set( 'display_errors', 1 );
-	ini_set( 'error_reporting', E_ALL );
-	require_once("/var/www/html/tango/func.php");
-
-	$con = connectDB();
-	session_start();
-	$user_id = $_SESSION["user_id"];
-	$username = $_SESSION["username"];
-    $table_id = $_GET["table_id"];
-
-    if (!$user_id) {
-        header("Location: ./logout.php");
-    }
-?>
 
 
 
@@ -441,6 +446,9 @@
         margin: 1px 10px;
         white-space: pre-wrap;
     }
+    #creation, #update {
+        font-style: italic;
+    }
     .wrapper_dates {
         display: flex;
         flex-direction: row;
@@ -450,11 +458,15 @@
     }
     #wrapper_table {
         display: flex;
+        margin: auto;
         flex-direction: row;
         border-collapse: collapse;
+        text-align: center;
     }
     .column {
+/*
         display: table-cell;
+*/
         border-collapse: collapse;
         text-align: center;
     }
@@ -605,4 +617,8 @@
         margin: 0; 
         background-color: rgba(0,0,0,0);
     }
+    details {
+        margin: 5px;
+    }
+
 </style>
