@@ -88,7 +88,14 @@
         json_tables.forEach( function (value, index) {
             let table_id = value[0];
             let tablename = value[1];
+            if (tablename.length > 18) {
+                tablename = tablename.substr(0, 18) + "...";
+            }
             let explanation = value[2];
+            if (explanation.length > 40) {
+                explanation = explanation.substr(0, 40) + "...";
+            }
+            console.log(explanation.length);
             let public = value[3];
             if (public == 1) {
                 public_text = "public";
@@ -281,6 +288,18 @@
     }
     #column_0 .cell_data {
         border-left: solid 4px #C3C3C3;
+    }
+    #wrapper_window {
+        display: none;
+        position: absolute;
+        width: 300px;
+        height: 200px;
+        top: 0;
+        right: 0;
+        bottom: 0;
+        left: 0;
+        margin: auto;
+        z-index: 10;
     }
     .fa-circle-plus {
         margin: 0 8px;

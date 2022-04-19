@@ -66,6 +66,26 @@
                         
                     <button id="update_column">UPDATE column</button>
                 </div>
+                <div id="confirm_window">
+                    <button onclick="closeWindow();"><i class="fa-solid fa-circle-xmark"></i></button>
+                    <p>You're going to delete this table.</p>
+                    <form id="form_confirm_password">
+                        Please enter your password <br>
+                        to continue.
+                        <input type="password" id="confirm_password_password" name="password"><br>
+                    </form>
+                        <button id="confirm_password">Confirm</button>
+                    <div id="wrapper_delete_table">
+                        Are you sure you want to completly delete this table?<br>
+                        This can't be undone.
+                        <div>
+                            <button id="delete_table">DELETE</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <div>
+                <button id="delete" onclick="displayConfirmWindow();"><i class="fa-solid fa-trash-can"></i></button>
             </div>
         </div>
     </div>
@@ -214,6 +234,22 @@
         update_column_column_id.value = column_id;
     }
 
+    function displayConfirmWindow() {
+        let wrapper_window = document.getElementById("wrapper_window");
+        wrapper_window.style.display = "flex";
+        windows = wrapper_window.children;
+        for (let i = 0; i < windows.length; i++){
+			windows[i].style.display = "none";
+		}
+        let confirm_window = document.getElementById("confirm_window");
+        confirm_window.style.display = "block";
+    }
+
+    function displayDeleteButton() {
+        let wrapper_delete_table = document.getElementById("wrapper_delete_table");
+        wrapper_delete_table.style.display = "block";
+    }
+
     function closeWindow() {
         let wrapper_window = document.getElementById("wrapper_window");
         wrapper_window.style.display = "none";
@@ -287,8 +323,9 @@
             else if (xhr.readyState == 4 && xhr.status == 200) {
                 let responce = xhr.response;
                 if (responce == 0) {
-                    loadTable(user_id, username, table_id);
                     closeWindow();
+                    clearColumns();
+                    getColumns(table_id);
                 }
                 else {
                     window.alert(responce);
@@ -298,6 +335,66 @@
         }
         //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
         xhr.send(formData);
+    });
+
+    let confirm_password = document.getElementById('confirm_password');
+    confirm_password.addEventListener('click', function() {
+        let form = document.getElementById('form_confirm_password');
+        formData = new FormData(form);
+        formData.append("user_id", user_id);
+
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/confirmPassword.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                if (responce == 0) {
+                    displayDeleteButton();
+                }
+                else if (responce == -1) {
+                    window.alert("Password is incorrect.");
+                }
+                else {
+                    window.alert(responce);
+                }
+                console.log(responce);
+            }
+        }
+        //xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send(formData);
+    });
+
+    let delete_table = document.getElementById('delete_table');
+    delete_table.addEventListener('click', function() {
+        let xhr = new XMLHttpRequest();
+        xhr.open('POST', './ajax/deleteTable.php');
+        xhr.onreadystatechange = function () {
+            if (xhr.readyState == 2) {
+                //console.log("HEADERS_RECEIVED");
+            }
+            else if (xhr.readyState == 3) {
+                //console.log("LOADING");
+            }
+            else if (xhr.readyState == 4 && xhr.status == 200) {
+                let responce = xhr.response;
+                if (responce == 0) {
+                    window.alert("This table is successfuly deleted.");
+                    window.location.href = './tableList.php'; 
+                }
+                else {
+                    window.alert(responce);
+                }
+                console.log(responce);
+            }
+        }
+        xhr.setRequestHeader('Content-Type','application/x-www-form-urlencoded');
+        xhr.send("table_id=" + table_id);
     });
 </script>
 
@@ -333,6 +430,49 @@
         padding: 10px;
         margin: auto;
         box-shadow: 5px 5px 5px;
+    }
+    #confirm_window {
+        display: none;
+        text-align: center;
+        background-color: #ff9e8f;
+        border: solid 5px;
+        border-color: white;
+        border-radius: 15px;
+        padding: 10px;
+        margin: auto;
+        box-shadow: 5px 5px 5px;
+    }
+    #confirm_window .fa-circle-xmark{
+        color: black; 
+    }
+    #confirm_window .fa-circle-xmark:hover{
+        color: rgba(0,0,0,0.65); 
+    }
+    #confirm_password {
+        width: 60px;
+        height: 25px;
+        margin: 5px;
+        border: none;
+        border-radius: 3px; 
+        color: white;
+        font-size: 14px;
+        font-weight: bold;
+        background-color: grey;
+    }
+    #wrapper_delete_table {
+        display: none;
+        margin: 3px;
+    }
+    #delete_table {
+        width: 80px;
+        height: 30px;
+        margin: 3px;
+        border: none;
+        border-radius: 5px; 
+        color: white;
+        font-size: 16px;
+        font-weight: bold;
+        background-color: black;
     }
     .fa-circle-xmark {
         margin: 0 8px;

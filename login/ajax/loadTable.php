@@ -18,6 +18,10 @@
     }
     $row0 = pg_fetch_assoc($res0);
     $column_row = $row0["column_order"];
+    if ($column_row == '') {
+        echo("-1");
+        exit;
+    }
     $array_column_row = explode(",", $row0["column_order"]);
     
     //$SQL = "SELECT * FROM columns WHERE user_id = '{$user_id}' AND table_id = '{$table_id}' ORDER BY column_id ASC";
@@ -36,7 +40,6 @@
         echo("error: ".$SQL);
         exit;
     }
-    $num = pg_num_rows($res);
 
     $array_column = array();
     //for ($i = 0; $i < $num; $i++) {

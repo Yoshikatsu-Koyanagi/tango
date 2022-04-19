@@ -193,6 +193,10 @@
                 console.log(json);
                 json = JSON.parse(json);
                 console.log(json);
+                if (json == -1) {
+                    console.log("This table has no columns.");
+                    return;
+                }
                 array_column = json[0];
                 console.log(array_column);
                 //rows = parseInt(json[1]);
@@ -458,7 +462,6 @@
     }
     #wrapper_table {
         display: flex;
-        margin: auto;
         flex-direction: row;
         border-collapse: collapse;
         text-align: center;
